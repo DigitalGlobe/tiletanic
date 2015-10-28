@@ -1,4 +1,4 @@
-"""Common data structures for Tiletanic."""
+"""Common data structures and classes for Tiletanic."""
 from collections import namedtuple
 
 Tile = namedtuple('Tile', ['x', 'y', 'z'])

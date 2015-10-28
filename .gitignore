@@ -1,2 +1,7 @@
 /venv/
 *.pyc
+/.cache*
+*.cache*
+*.egg_info*
+.egg-info*
+*.egg-info*
