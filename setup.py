@@ -11,6 +11,7 @@ setup(name='tiletanic',
       url='https://github.com/digitalglobe/tiletanic',
       license='BSD',
       packages=find_packages(exclude=['tests']),
-      include_package_data=True)
-      #zip_safe=False,
-      #install_requires=['click>=3.0']
+      include_package_data=True,
+      zip_safe=False,
+      install_requires=['shapely>=1.5']
+      )
