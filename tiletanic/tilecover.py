@@ -27,9 +27,14 @@ def cover_geometry(tilescheme, geom, zoom):
         return
 
     # Generate the covering.
-    prep_geom = prepared.prep(geom)
-    for tile in _cover_geometry(tilescheme, Tile(0, 0, 0), prep_geom, geom, zoom):
-        yield tile
+    prep_geom = prepared.prep(geom)    
+    if isinstance(geom, (geometry.Polygon, geometry.MultiPolygon)):        
+        for tile in _cover_polygonal(tilescheme, Tile(0, 0, 0), prep_geom, geom, zoom):
+            yield tile
+    else:
+        for tile in _cover_geometry(tilescheme, Tile(0, 0, 0), prep_geom, geom, zoom):
+            yield tile
+    
 
 def _cover_geometry(tilescheme, curr_tile, prep_geom, geom, max_zoom):
     """Covers geometries with tiles by recursion. 
@@ -38,7 +43,7 @@ def _cover_geometry(tilescheme, curr_tile, prep_geom, geom, max_zoom):
         tilescheme: The tile scheme to use.  This needs to implement
                     the public protocal of the schemes defined within
                     tiletanic.
-        curr_tile: 
+        curr_tile: The current tile in the recursion scheme.
         prep_geom: The prepared version of the geometry we would like to cover.  
         geom: The shapely geometry we would like to cover.          
         max_zoom: The zoom level to recurse to.
@@ -55,4 +60,61 @@ def _cover_geometry(tilescheme, curr_tile, prep_geom, geom, max_zoom):
                          for tile in _cover_geometry(tilescheme, child_tile,
                                                      prep_geom, geom, max_zoom)):
                 yield tile
-    
+
+def _cover_polygonal(tilescheme, curr_tile, prep_geom, geom, max_zoom):
+    """Covers polygonal geometries with tiles by recursion. 
+
+    This is method is slightly more efficient than _cover_geometry in
+    that we can check if a tile is completely covered by a geometry
+    and if so, skip directly to the max zoom level to fetch the
+    covered tiles.
+
+    Args:
+        tilescheme: The tile scheme to use.  This needs to implement
+                    the public protocal of the schemes defined within
+                    tiletanic.
+        curr_tile: The current tile in the recursion scheme.
+        prep_geom: The prepared version of the polygonal geometry we
+                   would like to cover. 
+        geom: The shapely polygonal geometry we would like to cover.          
+        max_zoom: The zoom level to recurse to.
+
+    Yields:
+        An iterator of Tile objects ((x, y, z) tuples) that
+        cover the input polygonal geometry.
+    """
+    tile_geom = geometry.box(*tilescheme.bbox(curr_tile))
+    if prep_geom.intersects(tile_geom):
+        if curr_tile.z == max_zoom:
+            yield curr_tile
+        elif prep_geom.contains(tile_geom):
+            for tile in (tile for child_tile in tilescheme.children(curr_tile)
+                      for tile in _containing_tiles(tilescheme, child_tile, max_zoom)):
+                yield tile
+        else:
+            for tile in (tile for child_tile in tilescheme.children(curr_tile)
+                         for tile in _cover_polygonal(tilescheme, child_tile,
+                                                      prep_geom, geom, max_zoom)):
+                yield tile
+                
+def _containing_tiles(tilescheme, curr_tile, max_zoom):
+    """Given a Tile, returns the tiles that compose that tile at the
+    zoom level provided.
+
+    Args:
+        tilescheme: The tile scheme to use.  This needs to implement
+                    the public protocal of the schemes defined within
+                    tiletanic.
+        curr_tile: The current tile in the recursion scheme.
+        max_zoom: The zoom level to recurse to.
+
+    Yields:
+        An iterator of Tile objects ((x, y, z) tuples) that
+        compose the input tile.
+    """
+    if curr_tile.z == max_zoom:
+        yield curr_tile
+    else:
+        for tile in (tile for child_tile in tilescheme.children(curr_tile)
+                     for tile in _containing_tiles(tilescheme, child_tile, max_zoom)):
+            yield tile
