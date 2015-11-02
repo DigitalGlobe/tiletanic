@@ -5,3 +5,7 @@
 *.egg_info*
 .egg-info*
 *.egg-info*
+docenv/
+docs/_build/
+docs/_build
+docs/_build*

@@ -15,11 +15,8 @@ class BasicTilingBottomLeft(object):
     Note that quadkey indices are defined like this for each
     square:
 
-    ---------
-    | 2 | 3 |
-    ---------
-    | 0 | 1 |
-    ---------
+    2  3
+    0  1
 
     The origin of a tile (row, column) is the bottom left of the
     bounds, as opposed to some of the web mercator schemes!  
@@ -158,8 +155,8 @@ class BasicTilingBottomLeft(object):
         """Returns the bounding box of the (x, y, z) tile.
 
         Args:
-            tile: A tuple of (x, y, z) tile coordinates or a Tile
-                  object we want the bounding box of.
+            *tile: A tuple of (x, y, z) tile coordinates or a Tile
+                   object we want the bounding box of.
 
         Returns:
             The bounding box of the input tile.
@@ -177,8 +174,8 @@ class BasicTilingBottomLeft(object):
         """Returns the quadkey of the (x, y, z) tile.
 
         Args:
-            tile: A tuple of (x, y, z) tile coordinates or a Tile
-                  object we want the quadkey of.
+            *tile: A tuple of (x, y, z) tile coordinates or a Tile
+                   object we want the quadkey of.
 
         Returns:
             The quadkey of the input tile.
