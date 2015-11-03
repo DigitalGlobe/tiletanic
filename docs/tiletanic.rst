@@ -1,9 +1,6 @@
 tiletanic package
 =================
 
-Submodules
-----------
-
 tiletanic.base module
 ---------------------
 
@@ -24,15 +21,6 @@ tiletanic.tileschemes module
 ----------------------------
 
 .. automodule:: tiletanic.tileschemes
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: tiletanic
     :members:
     :undoc-members:
     :show-inheritance:

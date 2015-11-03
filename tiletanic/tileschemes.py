@@ -1,3 +1,9 @@
+"""Tiling schemes precanned for Tiletanic.
+
+The public APIs of these classes are all that another class would need
+to implement in order to use any of the algorithms defined in the
+Tiletanic package. 
+"""
 from math import floor
 import re
 
@@ -13,13 +19,20 @@ class BasicTilingBottomLeft(object):
     coordinates.
 
     Note that quadkey indices are defined like this for each
-    square:
+    tile's children::
 
-    2  3
-    0  1
+        ---------
+        | 2 | 3 |
+        --------
+        | 0 | 1 |
+        ---------
 
     The origin of a tile (row, column) is the bottom left of the
     bounds, as opposed to some of the web mercator schemes!  
+
+    Attributes:
+        bounds: The bounding box for the projection that the tiling
+                scheme is defined for.
     """
     def __init__(self, xmin, ymin, xmax, ymax):
         """Constructs an object that generates tile bounds for you.
@@ -278,16 +291,18 @@ class BasicTilingBottomLeft(object):
 
 
 class DGTiling(BasicTilingBottomLeft):
+    """Tiler for the DG tiling scheme.
 
+    The DG tiling scheme is a subdivision of the WGS84 ellipsoid.
+    Long/lat coordinates are directly mapped to the rectange [-180,
+    180] and [-90, 90] in this scheme.  In practice, level 0 is a
+    square whose latitude goes from -90 to 270, so half of this square
+    is undefined!  Because of this, the tiling really starts at level
+    0, with the bottom two tiles being valid.  The children method
+    handles this oddity for you.
+    """
     def __init__(self):
-        """Tiler for the DG tiling scheme.
-
-        The DG tiling scheme is a subdivision of the WGS84 ellipsoid.
-        Long/lat coordinates are directly mapped to the rectange
-        [-180, 180] and [-90, 90] in this scheme.  In practice, level
-        0 is a square whose latitude goes from -90 to 270, so half of
-        this square is undefined!  Because of this, the tiling really
-        starts at level 0, with the bottom two tiles being valid.
+        """Construct a DG tiling scheme object for you.
 
         Returns:
             Tiling object that functions as the usual DG tiling scheme.
