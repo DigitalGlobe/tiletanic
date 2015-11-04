@@ -5,9 +5,13 @@ Tiletanic is a library for making and using geospatial tiling schemes.  It's goa
 
 Tiletanic is MIT licensed.  
 
-Contributions are more than welcome!  Please check out the `GitHub site`_.
-
 Full documentation is hosted `here <http://tiletanic.readthedocs.org/en/latest/>`_.
+
+Installation is easy::
+
+    pip install tiletanic
+
+The only dependency is shapely_, and to install that, you'll need GEOS_ installed (usually in your package manager). 
 
 Motivation
 ----------
@@ -24,4 +28,4 @@ Tiletanic's use cases are a bit different:
 .. _`Web Mercator`: https://en.wikipedia.org/wiki/Web_Mercator
 .. _Mercantile: https://github.com/mapbox/mercantile
 .. _DigitalGlobe: https://www.digitalglobe.com/  
-.. _`GitHub site`: https://github.com/DigitalGlobe/tiletanic
+.. _GEOS: http://geos.osgeo.org/doxygen/

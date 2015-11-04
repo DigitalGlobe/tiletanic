@@ -12,6 +12,12 @@ Tiletanic is MIT licensed.
 
 Contributions are more than welcome!  Please check out the `GitHub site`_.
 
+Installation is easy::
+
+    pip install tiletanic
+
+The only dependency is shapely_, and to install that, you'll need GEOS_ installed (usually in your package manager). 
+
 .. toctree::
    :maxdepth: 2
    
@@ -20,3 +26,5 @@ Contributions are more than welcome!  Please check out the `GitHub site`_.
    tiletanic
 
 .. _`GitHub site`: https://github.com/DigitalGlobe/tiletanic
+.. _shapely: https://github.com/Toblerity/Shapely
+.. _GEOS: http://geos.osgeo.org/doxygen/
