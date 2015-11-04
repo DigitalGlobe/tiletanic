@@ -28,4 +28,5 @@ Tiletanic's use cases are a bit different:
 .. _`Web Mercator`: https://en.wikipedia.org/wiki/Web_Mercator
 .. _Mercantile: https://github.com/mapbox/mercantile
 .. _DigitalGlobe: https://www.digitalglobe.com/  
+.. _shapely: https://github.com/Toblerity/Shapely
 .. _GEOS: http://geos.osgeo.org/doxygen/
