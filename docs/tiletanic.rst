@@ -1,4 +1,4 @@
-tiletanic package
+Tiletanic Documentation
 =================
 
 tiletanic.base module
