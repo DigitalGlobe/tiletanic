@@ -10,7 +10,7 @@ setup(name='tiletanic',
       author_email='patrick.young@digitalglobe.com',
       url='https://github.com/digitalglobe/tiletanic',
       license='BSD',
-      packages=find_packages(exclude=['tests']),
+      packages=find_packages(exclude=['tests', 'docs']),
       include_package_data=True,
       zip_safe=False,
       install_requires=['shapely>=1.5']
