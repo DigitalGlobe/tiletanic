@@ -332,3 +332,64 @@ class DGTiling(BasicTilingBottomLeft):
         if z == 0:
             return [Tile(0, 0, 1), Tile(1, 0, 1)]
         return super(DGTiling, self).children(x, y, z)
+
+
+class WebMercatorBL(BasicTilingBottomLeft):
+    """Tile scheme for Web Mercator with the tile origin in the bottom
+    left corner.
+
+    Web Mercator (EPSG 3857) is commonly used in online mapping
+    applications.  This scheme has the tile coordinates originating in
+    the bottom left, which is what the `TMS specification
+    <http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification#TileMap_Diagram>`_
+    calls for (as opposed to what Google, Bing, slippy maps, etc do).
+
+    Note that quadkey indices are defined like this for each
+    tile's children (as the Bing scheme labels them)::
+
+        ---------
+        | 0 | 1 |
+        --------
+        | 2 | 3 |
+        ---------
+    """
+    def __init__(self):
+        """Construct a Web Mercator tiling scheme object for you where
+        the origin is in the bottom left corner.
+
+        Returns:
+            Tiling object for web mercator, with tile origin in the
+            bottom left corner.
+        """
+        super(WebMercatorBL, self).__init__(-20037508.342789244, 
+                                            -20037508.342789244,
+                                            20037508.342789244, 
+                                            20037508.342789244)
+
+    def quadkey(self, *tile):
+        """Returns the quadkey of the (x, y, z) tile.
+
+        Args:
+            *tile: A tuple of (x, y, z) tile coordinates or a Tile
+                   object we want the quadkey of.
+
+        Returns:
+            The quadkey of the input tile.
+        """
+        if len(tile) == 1: # Handle if a Tile object was inputted.
+            tile = tile[0]
+        x, y, z  = [int(i) for i in tile]
+        
+        quadkey = []
+        for zoom in range(z, 0, -1):
+            digit = 0
+            mask = 1 << (zoom - 1)
+            if int(x) & mask:
+                digit += 1
+            if int(y) & mask:
+                digit += 2
+            quadkey.append(digit)
+        return ''.join(str(d) for d in quadkey)
+
+
+
