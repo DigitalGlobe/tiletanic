@@ -386,7 +386,7 @@ class WebMercatorBL(BasicTilingBottomLeft):
             mask = 1 << (zoom - 1)
             if int(x) & mask:
                 digit += 1
-            if int(y) & mask:
+            if not (int(y) & mask):
                 digit += 2
             quadkey.append(digit)
         return ''.join(str(d) for d in quadkey)
