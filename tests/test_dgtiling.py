@@ -71,6 +71,13 @@ def test_quadkey(tiler):
     assert tiler.quadkey(2, 1, 2) == '12'
     assert tiler.quadkey(3, 1, 2) == '13'
 
+    assert not tiler.quadkey(0, 0, 0)
+
+    assert tiler.quadkey(3, 1, 3) == '013'
+    assert tiler.quadkey(4, 1, 3) == '102'
+    assert tiler.quadkey(3, 2, 3) == '031'
+    assert tiler.quadkey(4, 2, 3) == '120'
+
     assert tiler.quadkey(20, 35, 9) == '000210122'
 
         
@@ -107,16 +114,6 @@ def test_bbox(tiler):
     assert tiler.bbox(4, 2, 3) == (0., 0., 45., 45.)
 
     
-def test_quadkey(tiler):
-    """Tile to quadkey."""
-    assert not tiler.quadkey(0, 0, 0)
-
-    assert tiler.quadkey(3, 1, 3) == '013'
-    assert tiler.quadkey(4, 1, 3) == '102'
-    assert tiler.quadkey(3, 2, 3) == '031'
-    assert tiler.quadkey(4, 2, 3) == '120'
-
-
 def test_quadkey_to_tile1(tiler):
     """Quadkey to tile exceptions."""
     with pytest.raises(ValueError):

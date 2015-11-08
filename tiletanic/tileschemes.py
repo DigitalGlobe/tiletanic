@@ -698,3 +698,34 @@ class WebMercatorBL(BasicTilingBottomLeft):
         
         return Tile(x, 2**len(qk) - y - 1, len(qk))
 
+
+class WebMercator(BasicTilingTopLeft):
+    """Tile scheme for Web Mercator with the tile origin in the top
+    left corner.
+
+    Web Mercator (EPSG 3857) is commonly used in online mapping
+    applications.  This scheme has the tile coordinates originating in
+    the top left, which is what Google, Bing, and most others do for 
+    Web Mercator.
+
+    Note that quadkey indices are defined like this for each
+    tile's children (as the Bing scheme labels them)::
+
+        ---------
+        | 0 | 1 |
+        --------
+        | 2 | 3 |
+        ---------
+    """
+    def __init__(self):
+        """Construct a Web Mercator tiling scheme object for you where
+        the origin is in the top left corner.
+
+        Returns:
+            Tiling object for web mercator, with tile origin in the
+            top left corner.
+        """
+        super(WebMercator, self).__init__(-20037508.342789244, 
+                                          -20037508.342789244,
+                                          20037508.342789244, 
+                                          20037508.342789244)

@@ -9,3 +9,5 @@ docenv/
 docs/_build/
 docs/_build
 docs/_build*
+/build/
+/dist/

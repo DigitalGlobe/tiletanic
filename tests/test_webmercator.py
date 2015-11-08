@@ -1,23 +1,11 @@
 import pytest
 
-from tiletanic.tileschemes import BasicTilingTopLeft
+from tiletanic.tileschemes import WebMercator
 
 @pytest.fixture
 def tiler():
-    return BasicTilingTopLeft(-20037508.342789244,
-                              -20037508.342789244,
-                              20037508.342789244,
-                              20037508.342789244)
+    return WebMercator()
 
-
-def test_init():
-    """Constructor exceptions."""
-    with pytest.raises(ValueError):
-        BasicTilingTopLeft(1, 0, 1, 1)
-
-    with pytest.raises(ValueError):
-        BasicTilingTopLeft(0, 1, 1, 1)
-        
 
 def test_bounds(tiler):
     """Web Mercator bounds."""

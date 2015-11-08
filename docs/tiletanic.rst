@@ -1,4 +1,4 @@
-Tiletanic Documentation
+API Documentation
 =======================
 
 tiletanic.base module
