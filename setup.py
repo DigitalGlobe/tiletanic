@@ -9,7 +9,7 @@ with open('README.rst', **open_kwds) as f:
     readme = f.read()
 
 setup(name='tiletanic',
-      version='0.0.3',
+      version='0.0.4',
       description='Geospatial tiling utilities',
       long_description=readme,
       classifiers=[],
