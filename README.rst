@@ -2,7 +2,7 @@ Tiletanic: Tools for Manipulating Geospatial Tiling Schemes
 ===========================================================
 
 .. image:: https://travis-ci.org/DigitalGlobe/tiletanic.svg?branch=master
-   :target: https://github.com/DigitalGlobe/tiletanic
+   :target: https://travis-ci.org/DigitalGlobe/tiletanic
 
 
 

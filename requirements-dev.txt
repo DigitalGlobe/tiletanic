@@ -1,4 +1,6 @@
+click
+geojson
 py==1.4.30
 pytest==2.8.2
-Shapely==1.5.13
+Shapely>=1.5
 wheel==0.24.0
