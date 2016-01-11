@@ -21,5 +21,11 @@ setup(name='tiletanic',
       packages=find_packages(exclude=['tests', 'docs']),
       include_package_data=True,
       zip_safe=False,
-      install_requires=['shapely>=1.5']
+      install_requires=['click',
+                        'geojson',
+                        'shapely>=1.5'],
+      entry_points='''
+         [console_scripts]
+         tiletanic=tiletanic.cli:cli
+      '''
       )
