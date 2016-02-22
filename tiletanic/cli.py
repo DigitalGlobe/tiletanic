@@ -21,14 +21,14 @@ def cli():
 @click.argument('aoi_geojson', type=click.File('r'))
 @click.option('--zoom', default=9, type=click.IntRange(0,26),
               help="Zoom level at which to generate tile covering of "
-                   "AOI_GEOJSON.")
-@click.option('--adjacent/--no-adacent', default = False,
+                   "AOI_GEOJSON.  Default=9")
+@click.option('--adjacent/--no-adjacent', default = False,
               help="Include all tiles that have at least one boundary "
                     "point in common, but not necessarily interior "
-                    "points")
+                    "points. Default=do not include adjacent tiles")
 @click.option('--quadkey/--no-quadkey', default=True,
               help="Output option to prints the quadkeys of the tile "
-                   "covering generated")
+                   "covering generated. Default prints quadkeys")
 def cover_geometry(tilescheme, aoi_geojson, zoom, adjacent, quadkey):
     """Calculate a tile covering for an input AOI_GEOJSON at a particular
     ZOOM level using the given TILESCHEME.
