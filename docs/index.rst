@@ -24,6 +24,7 @@ The only dependency is shapely_, and to install that, you'll need GEOS_ installe
    motivation
    user_guide
    tiletanic
+   cli
 
 .. _`GitHub site`: https://github.com/DigitalGlobe/tiletanic
 .. _shapely: https://github.com/Toblerity/Shapely
