@@ -9,11 +9,11 @@ with open('README.rst', **open_kwds) as f:
     readme = f.read()
 
 setup(name='tiletanic',
-      version='0.0.6',
+      version='1.0.0',
       description='Geospatial tiling utilities',
       long_description=readme,
       classifiers=[
-          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3.6',
       ],
       keywords='',
       author='Patrick Young',
@@ -25,7 +25,9 @@ setup(name='tiletanic',
       zip_safe=False,
       install_requires=['click',
                         'geojson',
-                        'shapely>=1.5'],
+                        'shapely>=1.5',
+                        'fiona>=1.8.6',
+      ],
       entry_points='''
          [console_scripts]
          tiletanic=tiletanic.cli:cli
