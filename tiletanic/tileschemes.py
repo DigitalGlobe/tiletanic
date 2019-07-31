@@ -799,11 +799,15 @@ class UTMTiling(BasicTilingTopLeft):
         tile_boxes = []
         min_lat = 84.0
         start_x, start_y = self._tile_indices(0.0, min_lat, zoom, utm_zone)
+        import time
         for y in range(start_y - 1, 2**zoom - start_y + 1):
+            ts = time.time()
             add_right = False
-            for x in range(start_x - 1, 2**zoom - start_x + 1):
-                t = Tile(x, y, zoom)
-                
+            row_tiles = [Tile(x, y, zoom) for x in range(start_x - 1, 2**zoom - start_x + 1)]
+
+            # Find the first good tile.
+            for i_start in range(len(row_tiles)):
+                t = row_tiles[i_start]
                 bbox = geometry.box(*self.bbox(t))
                 if not utm_box.intersects(bbox):
                     continue
@@ -816,21 +820,43 @@ class UTMTiling(BasicTilingTopLeft):
                 if pct_in_zone < 0.5 and not add_right:
                     add_right = True
                     continue
-
-                tile_boxes.append(bbox)
-                yield t
-
-            # Set next x index start location.
-            if not tile_boxes:
+                break
+            else:
+                # No good ones found in this row, so just move on to the next.
                 continue
-            
+
+            # Find the last good tile.
+            for i_end in range(len(row_tiles)-1, -1, -1):
+                t = row_tiles[i_end]
+                bbox = geometry.box(*self.bbox(t))
+                if not utm_box.intersects(bbox):
+                    continue
+                
+                geo_bbox = geometry.shape(transform.transform_geom(utm_zone, 'EPSG:4326', geometry.mapping(bbox)))
+                if not geomp_box.intersects(geo_bbox):
+                    continue
+
+                pct_in_zone = geo_bbox.intersection(geom_box).area/geo_bbox.area
+                if pct_in_zone < 0.5 and not add_right:
+                    add_right = True
+                    continue
+                break
+
+            for t in row_tiles[i_start:i_end+1]:
+                yield t
+                
+            # Set next x index start location.
+            tile_boxes.extend(geometry.box(*self.bbox(t)) for t in row_tiles[i_start:i_end+1])
             xmin, ymin, _, _ = tile_boxes[-1].bounds
             _, ylat = transform.transform(utm_zone, 'EPSG:4326', [xmin], [ymin])
             min_lat = ylat[0]
             start_x, _ = self._tile_indices(0.0, min_lat, zoom, utm_zone)
-
+            te = time.time()
+            if y % 100 == 0:
+                print("finished row {} in {}".format(y, te-ts))
 
         # Look for gaps.
+        ts = time.time()
         zone_poly = geometry.mapping(ops.unary_union(tile_boxes))
         zone_left = geometry.shape(transform.transform_geom(utm_zone, 'EPSG:4326', zone_poly))
         zone_right = geometry.shape(transform.transform_geom('EPSG:32630', 'EPSG:4326', zone_poly))
@@ -841,6 +867,8 @@ class UTMTiling(BasicTilingTopLeft):
 
         for t in tilecover.cover_geometry(self, holes, zoom):
             yield t
+        te = time.time()
+        print("finished gap search in {}".format(te-ts))
 
 
     def _tile_indices(self, lng, lat, zoom, epsg_code):
