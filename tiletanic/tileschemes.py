@@ -751,7 +751,7 @@ class UTMTiling(BasicTilingTopLeft):
         Args:
             tile_size: The size of the tile grid (meters) you want to
                        use as a covering of the UTM bounds.
-                       E.G. 100000 would correspond to the 100km MGRS
+                       E.G. 100_000 would correspond to the 100km MGRS
                        tiling for this zone.
 
         Returns:
@@ -762,15 +762,13 @@ class UTMTiling(BasicTilingTopLeft):
         self.tile_size = tile_size
 
         # For this tile size, figure out the size of the bounding box
-        # that covers the UTM projection bounds. Remember that a UTM
-        # zone is 10000000 meters tall as measured from the origin
-        # so we need to have a map size that exceeds that dimension.
-        zoom = ceil(log2(10000000.0/self.tile_size))
+        # that covers the UTM projection bounds. Remember that a UTM zone is 10_000_000 meters tall as measured from the origin so we need to have a map size that exceeds that dimension.
+        zoom = ceil(log2(10_000_000.0/self.tile_size))
         map_size = self.tile_size * 2**zoom
         self.zoom = zoom + 1
 
-        super().__init__(-map_size + 500000.0, -map_size,
-                          map_size + 500000.0,  map_size)
+        super().__init__(-map_size + 500_000.0, -map_size,
+                          map_size + 500_000.0,  map_size)
 
         
 class UTM10kmTiling(UTMTiling):
@@ -780,7 +778,7 @@ class UTM10kmTiling(UTMTiling):
     to the 10km tiles.
     """
     def __init__(self):
-        super().__init__(10000)
+        super().__init__(10_000)
 
         
 class UTM100kmTiling(UTMTiling):
@@ -790,4 +788,4 @@ class UTM100kmTiling(UTMTiling):
     to the 100km tiles.
     """
     def __init__(self):
-        super().__init__(100000)        
+        super().__init__(100_000)        
