@@ -13,7 +13,6 @@ setup(name='tiletanic',
       description='Geospatial tiling utilities',
       long_description=readme,
       classifiers=[
-          'Programming Language :: Python :: 3.5',
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
       ],
@@ -27,7 +26,7 @@ setup(name='tiletanic',
       zip_safe=False,
       install_requires=['click',
                         'geojson',
-                        'shapely>=1.5'],
+                        'shapely>=1.6'],
       entry_points='''
          [console_scripts]
          tiletanic=tiletanic.cli:cli
