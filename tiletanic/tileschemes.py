@@ -7,10 +7,7 @@ Tiletanic package.
 from math import floor, ceil, log2
 import re
 
-from . import Tile, Coords, CoordsBbox, tilecover
-
-from shapely import geometry, prepared, ops
-from fiona import transform
+from . import Tile, Coords, CoordsBbox
 
 qk_regex = re.compile(r'[0-3]+$')
 
@@ -739,12 +736,14 @@ class UTMTiling(BasicTilingTopLeft):
 
     We are building a hierarchical grid valid for a UTM projection.
     Recall that such a projection is roughtly 1,000,000 meters across
-    and 10,000,000 meters tall, so given a desired tile size, we build
-    out our grid to cover these bounds. 
+    and 20,000,000 meters tall (inclusive of both north and south
+    zones) , so given a desired tile size, we build out our grid to
+    cover these bounds.
 
     Attributes:
         zoom: The zoom level of the hierarchical grid that corresponds
               to the user provided tile_size.
+
     """
     def __init__(self, tile_size):
         """Constructs a UTMTiling object.
@@ -752,7 +751,7 @@ class UTMTiling(BasicTilingTopLeft):
         Args:
             tile_size: The size of the tile grid (meters) you want to
                        use as a covering of the UTM bounds.
-                       E.G. 100,000 would correspond to the 100km MGRS
+                       E.G. 100_000 would correspond to the 100km MGRS
                        tiling for this zone.
 
         Returns:
@@ -771,113 +770,22 @@ class UTMTiling(BasicTilingTopLeft):
         super().__init__(-map_size + 500_000.0, -map_size,
                           map_size + 500_000.0,  map_size)
 
-
-    def grid(self, zoom=None):
-        """Generate a tile grid valid for the UTM zone provided.
-
-        We keep tiles whose centroids fall within 3 degrees latitude
-        of the center of the zone (zones are 6 degrees wide by
-        definition, although the grid is well defined outside of
-        this) and whose longitude falls within -84 to 84 degrees.
-
-        Args:
-            zoom: The zoom level of the grid to generate.  If not set,
-                  we use zoom level associated with the tile size the
-                  class was configured with.
-
-        Returns:
-            A generator yielding Tile objects that compose the grid.
-        """
-        if zoom is None:
-            zoom = self.zoom
-
-        utm_zone = 'EPSG:32631' # bounded longitudes of 0 -> 6 degrees for zone 31N
-        utm_box = prepared.prep(geometry.box(0, -10_000_000, 1_000_000, 10_000_000))
-        geom_box = geometry.box(0.0, -84.0, 6.0, 84.0)
-        geomp_box = prepared.prep(geom_box)
-
-        tile_boxes = []
-        min_lat = 84.0
-        start_x, start_y = self._tile_indices(0.0, min_lat, zoom, utm_zone)
-        import time
-        for y in range(start_y - 1, 2**zoom - start_y + 1):
-            ts = time.time()
-            add_right = False
-            row_tiles = [Tile(x, y, zoom) for x in range(start_x - 1, 2**zoom - start_x + 1)]
-
-            # Find the first good tile.
-            for i_start in range(len(row_tiles)):
-                t = row_tiles[i_start]
-                bbox = geometry.box(*self.bbox(t))
-                if not utm_box.intersects(bbox):
-                    continue
-                
-                geo_bbox = geometry.shape(transform.transform_geom(utm_zone, 'EPSG:4326', geometry.mapping(bbox)))
-                if not geomp_box.intersects(geo_bbox):
-                    continue
-
-                pct_in_zone = geo_bbox.intersection(geom_box).area/geo_bbox.area
-                if pct_in_zone < 0.5 and not add_right:
-                    add_right = True
-                    continue
-                break
-            else:
-                # No good ones found in this row, so just move on to the next.
-                continue
-
-            # Find the last good tile.
-            for i_end in range(len(row_tiles)-1, -1, -1):
-                t = row_tiles[i_end]
-                bbox = geometry.box(*self.bbox(t))
-                if not utm_box.intersects(bbox):
-                    continue
-                
-                geo_bbox = geometry.shape(transform.transform_geom(utm_zone, 'EPSG:4326', geometry.mapping(bbox)))
-                if not geomp_box.intersects(geo_bbox):
-                    continue
-
-                pct_in_zone = geo_bbox.intersection(geom_box).area/geo_bbox.area
-                if pct_in_zone < 0.5 and not add_right:
-                    add_right = True
-                    continue
-                break
-
-            for t in row_tiles[i_start:i_end+1]:
-                yield t
-                
-            # Set next x index start location.
-            tile_boxes.extend(geometry.box(*self.bbox(t)) for t in row_tiles[i_start:i_end+1])
-            xmin, ymin, _, _ = tile_boxes[-1].bounds
-            _, ylat = transform.transform(utm_zone, 'EPSG:4326', [xmin], [ymin])
-            min_lat = ylat[0]
-            start_x, _ = self._tile_indices(0.0, min_lat, zoom, utm_zone)
-            te = time.time()
-            if y % 100 == 0:
-                print("finished row {} in {}".format(y, te-ts))
-
-        # Look for gaps.
-        ts = time.time()
-        zone_poly = geometry.mapping(ops.unary_union(tile_boxes))
-        zone_left = geometry.shape(transform.transform_geom(utm_zone, 'EPSG:4326', zone_poly))
-        zone_right = geometry.shape(transform.transform_geom('EPSG:32630', 'EPSG:4326', zone_poly))
-        zone_union = zone_left.union(zone_right)
-        holes = (geometry.Polygon(interior).centroid for interior in zone_union.interiors)
-        holes = ops.unary_union([geometry.shape(transform.transform_geom('EPSG:4326', utm_zone, geometry.mapping(pt)))
-                                 for pt in holes])
-
-        for t in tilecover.cover_geometry(self, holes, zoom):
-            yield t
-        te = time.time()
-        print("finished gap search in {}".format(te-ts))
-
-
-    def _tile_indices(self, lng, lat, zoom, epsg_code):
-        pt = geometry.shape(transform.transform_geom('EPSG:4326', epsg_code,
-                                                     {'type': 'Point', 'coordinates': (lng, lat)}))
-        tiles = [t for t in tilecover.cover_geometry(self, pt, zoom)]
-        return min(t.x for t in tiles), min(t.y for t in tiles)
-            
-            
-
-            
         
+class UTM10kmTiling(UTMTiling):
+    """A 10km tiling of a UTM zone.
+
+    Note that the zoom attribute tells you what zoom level corresponds
+    to the 10km tiles.
+    """
+    def __init__(self):
+        super().__init__(10_000)
+
+        
+class UTM100kmTiling(UTMTiling):
+    """A 100km tiling of a UTM zone.
+
+    Note that the zoom attribute tells you what zoom level corresponds
+    to the 100km tiles.
+    """
+    def __init__(self):
+        super().__init__(100_000)        

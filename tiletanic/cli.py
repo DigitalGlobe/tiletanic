@@ -1,10 +1,10 @@
 #TODO:
 # Add click tests
 # Add documentation - how to run with a file vs stdout, document arguments, etc.
+
 import click
 import geojson
 from shapely import geometry, ops, prepared
-import fiona
 import tiletanic
 
 @click.group()
@@ -14,41 +14,11 @@ def cli():
     pass
 
 @cli.command()
-@click.option('--hemisphere', type=click.Choice('N', 'S'),
-              default='N',
-              help='the north or south hemisphere')
-@click.option('--driver', default='GPKG',
-              help='GDAL driver to use for output file')
-@click.argument('tile_size', type=click.IntRange(1,))
-@click.argument('zone', type=click.IntRange(1, 60))
-@click.argument('f_out', type=click.Path())
-def utmgrid(hemisphere, tile_size, driver, zone, f_out):
-    scheme = tiletanic.tileschemes.UTMTiling(tile_size)
-    
-    minx, miny, maxx, maxy = 0.0, 0.0, 0.0, 0.0
-    if hemisphere == 'S':
-        miny += 10_000_000
-        maxy += 10_000_000
-        epsg_utm_code = 'EPSG:327{:02d}'.format(zone)
-    else:
-        epsg_utm_code = 'EPSG:326{:02d}'.format(zone)
-
-    with fiona.open(f_out, 'w', driver=driver, crs=epsg_utm_code,
-                    schema={'geometry': 'Polygon',
-                            'properties':{'tileID':'str'}}) as sink:
-        
-        for t in scheme.grid():
-            g = geometry.mapping(geometry.box(*[c1+c2 for c1, c2 in zip(scheme.bbox(t), (minx, miny, maxx, maxy))]))
-            sink.write({
-                'geometry': g,
-                'properties':{
-                    'tileID': 'Z{:02d}-{}'.format(zone, scheme.quadkey(t))
-                },
-            })
-            
-    
-
-@cli.command()
+@click.option('--tilescheme', default="DGTiling",
+              type=click.Choice(['DGTiling']),
+              help="DGTiling is the only supported Tiling Scheme at "
+                   "this time.")
+@click.argument('aoi_geojson', type=click.File('r'))
 @click.option('--zoom', default=9, type=click.IntRange(0,26),
               help="Zoom level at which to generate tile covering of "
                    "AOI_GEOJSON.  Default=9")
@@ -56,10 +26,12 @@ def utmgrid(hemisphere, tile_size, driver, zone, f_out):
               help="Include all tiles that have at least one boundary "
                     "point in common, but not necessarily interior "
                     "points. Default=do not include adjacent tiles")
-@click.argument('aoi_geojson', type=click.File('r'))
-def dgqks(zoom, adjacent, aoi_geojson):
+@click.option('--quadkey/--no-quadkey', default=True,
+              help="Output option to prints the quadkeys of the tile "
+                   "covering generated. Default prints quadkeys")
+def cover_geometry(tilescheme, aoi_geojson, zoom, adjacent, quadkey):
     """Calculate a tile covering for an input AOI_GEOJSON at a particular
-    ZOOM level using the DigitalGlobe tilescheme.
+    ZOOM level using the given TILESCHEME.
 
     AOI_GEOJSON - Area of Interest which needs to be chopped into a
     tile covering encoded as GeoJSON.  Should be either a single
@@ -96,7 +68,12 @@ def dgqks(zoom, adjacent, aoi_geojson):
         021323330
 
     """
-    scheme = tiletanic.tileschemes.DGTiling()
+
+    if tilescheme == 'DGTiling':
+        scheme = tiletanic.tileschemes.DGTiling()
+    else:
+        raise ValueError("tilescheme '{}' is unsupported.").format(tilescheme)
+
     aoi = geojson.loads( aoi_geojson.read() )
 
     if 'type' not in aoi:
@@ -116,8 +93,9 @@ def dgqks(zoom, adjacent, aoi_geojson):
     if not adjacent:
         tiles = _tiles_inside_geom(scheme, tiles, geom)
 
-    qks = [scheme.quadkey(t) for t in tiles]
-    click.echo( "\n".join( qks ) )
+    if quadkey:
+        qks = [scheme.quadkey(t) for t in tiles]
+        click.echo( "\n".join( qks ) )
 
 
 def _tiles_inside_geom(tilescheme, tiles, geom):
