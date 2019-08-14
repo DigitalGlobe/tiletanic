@@ -1,4 +1,4 @@
-from collections import Iterable
+from collections.abc import Iterable
 
 from shapely import geometry, ops, prepared
 
@@ -14,7 +14,10 @@ def cover_geometry(tilescheme, geom, zooms):
                     tiletanic.
         geom: The geometry we would like to cover.  This should be a
               shapely geometry.
-        zoom: The zoom level of the tiles to cover geom with.
+        zooms: The zoom levels of the tiles to cover geom with.  If
+               you provide an iterable of zoom levels, you'll get the
+               biggest tiles available that cover the geometry at
+               those levels.
 
     Yields:
         An iterator of Tile objects ((x, y, z) named tuples) that
@@ -27,7 +30,7 @@ def cover_geometry(tilescheme, geom, zooms):
     if geom.is_empty:
         return
 
-    zooms = zooms if isinstance(zooms, list) else [zooms]
+    zooms = zooms if isinstance(zooms, Iterable) else [zooms]
 
     # Generate the covering.
     prep_geom = prepared.prep(geom)    

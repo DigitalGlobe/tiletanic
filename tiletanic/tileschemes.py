@@ -4,7 +4,7 @@ The public APIs of these classes are all that another class would need
 to implement in order to use any of the algorithms defined in the
 Tiletanic package. 
 """
-from math import floor
+from math import floor, ceil, log2
 import re
 
 from . import Tile, Coords, CoordsBbox
@@ -729,3 +729,63 @@ class WebMercator(BasicTilingTopLeft):
                                           -20037508.342789244,
                                           20037508.342789244, 
                                           20037508.342789244)
+
+
+class UTMTiling(BasicTilingTopLeft):
+    """A tiling of a UTM projection.  
+
+    We are building a hierarchical grid valid for a UTM projection.
+    Recall that such a projection is roughtly 1,000,000 meters across
+    and 20,000,000 meters tall (inclusive of both north and south
+    zones) , so given a desired tile size, we build out our grid to
+    cover these bounds.
+
+    Attributes:
+        zoom: The zoom level of the hierarchical grid that corresponds
+              to the user provided tile_size.
+
+    """
+    def __init__(self, tile_size):
+        """Constructs a UTMTiling object.
+        
+        Args:
+            tile_size: The size of the tile grid (meters) you want to
+                       use as a covering of the UTM bounds.
+                       E.G. 100_000 would correspond to the 100km MGRS
+                       tiling for this zone.
+
+        Returns:
+            A tiling object valid for a UTM projection.
+        """
+        if tile_size <= 0.0:
+            raise ValueError('tile_size must be positive')
+        self.tile_size = tile_size
+
+        # For this tile size, figure out the size of the bounding box
+        # that covers the UTM projection bounds. Remember that a UTM zone is 10_000_000 meters tall as measured from the origin so we need to have a map size that exceeds that dimension.
+        zoom = ceil(log2(10_000_000.0/self.tile_size))
+        map_size = self.tile_size * 2**zoom
+        self.zoom = zoom + 1
+
+        super().__init__(-map_size + 500_000.0, -map_size,
+                          map_size + 500_000.0,  map_size)
+
+        
+class UTM10kmTiling(UTMTiling):
+    """A 10km tiling of a UTM zone.
+
+    Note that the zoom attribute tells you what zoom level corresponds
+    to the 10km tiles.
+    """
+    def __init__(self):
+        super().__init__(10_000)
+
+        
+class UTM100kmTiling(UTMTiling):
+    """A 100km tiling of a UTM zone.
+
+    Note that the zoom attribute tells you what zoom level corresponds
+    to the 100km tiles.
+    """
+    def __init__(self):
+        super().__init__(100_000)        
