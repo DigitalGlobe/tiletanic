@@ -9,12 +9,13 @@ with open('README.rst', **open_kwds) as f:
     readme = f.read()
 
 setup(name='tiletanic',
-      version='1.0.0',
+      version='1.1.0',
       description='Geospatial tiling utilities',
       long_description=readme,
       classifiers=[
           'Programming Language :: Python :: 3.6',
           'Programming Language :: Python :: 3.7',
+          'Programming Language :: Python :: 3.8',
       ],
       keywords='',
       author='Patrick Young',

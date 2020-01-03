@@ -762,13 +762,25 @@ class UTMTiling(BasicTilingTopLeft):
         self.tile_size = tile_size
 
         # For this tile size, figure out the size of the bounding box
-        # that covers the UTM projection bounds. Remember that a UTM zone is 10_000_000 meters tall as measured from the origin so we need to have a map size that exceeds that dimension.
+        # that covers the UTM projection bounds. Remember that a UTM
+        # zone is 10_000_000 meters tall as measured from the origin
+        # so we need to have a map size that exceeds that dimension.
         zoom = ceil(log2(10_000_000.0/self.tile_size))
         map_size = self.tile_size * 2**zoom
         self.zoom = zoom + 1
 
         super().__init__(-map_size + 500_000.0, -map_size,
                           map_size + 500_000.0,  map_size)
+
+
+class UTM5kmTiling(UTMTiling):
+    """A 5km tiling of a UTM zone.
+
+    Note that the zoom attribute tells you what zoom level corresponds
+    to the 5km tiles.
+    """
+    def __init__(self):
+        super().__init__(5_000)
 
         
 class UTM10kmTiling(UTMTiling):
