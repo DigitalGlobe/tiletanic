@@ -2,7 +2,7 @@
 
 The public APIs of these classes are all that another class would need
 to implement in order to use any of the algorithms defined in the
-Tiletanic package. 
+Tiletanic package.
 """
 from math import floor, ceil, log2
 import re
@@ -28,7 +28,7 @@ class BasicTilingBottomLeft(object):
         ---------
 
     The origin of a tile (row, column) is the bottom left of the
-    bounds, as opposed to some of the web mercator schemes!  
+    bounds, as opposed to some of the web mercator schemes!
 
     Attributes:
         bounds: The bounding box for the projection that the tiling
@@ -41,7 +41,7 @@ class BasicTilingBottomLeft(object):
         square tiling scheme defined over those bounds.  Note that if
         we think of long/lat, we are covering the earth twice with
         such a scheme!
-        
+
         Args:
             xmin: Minimum geospatial extent in the x direction of
                   tiling scheme.
@@ -70,9 +70,9 @@ class BasicTilingBottomLeft(object):
 
         Args:
             xcoord: x direction geospatial coordinate within the tile
-                    we want. 
+                    we want.
             ycoord: y direction geospatial coordinate within the tile
-                    we want. 
+                    we want.
             zoom: zoom level of the tile we want.
 
         Returns:
@@ -97,7 +97,7 @@ class BasicTilingBottomLeft(object):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z = tile
-        
+
         if x % 2 == 0 and y % 2 == 0: # x and y even
             return Tile(x//2, y//2, z - 1)
         elif x % 2 == 0: # x even, y odd
@@ -107,7 +107,7 @@ class BasicTilingBottomLeft(object):
         else: # x odd, y odd
             return Tile((x - 1)//2, (y - 1)//2, z - 1)
 
-        
+
     def children(self, *tile):
         """Returns the children of the (x, y, z) tile.
 
@@ -115,7 +115,7 @@ class BasicTilingBottomLeft(object):
             *tile: (x, y, z) tile coordinates or a Tile object we want
                    the children of.
 
-        Yields: 
+        Yields:
             An iterable of Tile objects representing the children of
             this tile.
         """
@@ -142,9 +142,9 @@ class BasicTilingBottomLeft(object):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z  = tile
-        
+
         return Coords(self._xcoord(x, z), self._ycoord(y + 1, z))
-                      
+
 
     def br(self, *tile):
         """Returns the bottom right coordinate of the (x, y, z) tile.
@@ -163,7 +163,7 @@ class BasicTilingBottomLeft(object):
         return Coords(self._xcoord(x + 1, z),
                       self._ycoord(y, z))
 
-    
+
     def bbox(self, *tile):
         """Returns the bounding box of the (x, y, z) tile.
 
@@ -181,7 +181,7 @@ class BasicTilingBottomLeft(object):
         west, north = self.ul(tile)
         east, south = self.br(tile)
         return CoordsBbox(west, south, east, north)
-        
+
 
     def quadkey(self, *tile):
         """Returns the quadkey of the (x, y, z) tile.
@@ -196,7 +196,7 @@ class BasicTilingBottomLeft(object):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z  = [int(i) for i in tile]
-        
+
         quadkey = []
         for zoom in range(z, 0, -1):
             digit = 0
@@ -260,7 +260,7 @@ class BasicTilingBottomLeft(object):
 
         return ((y/(2.**z)*(self._bounds.ymax - self._bounds.ymin)) + self._bounds.ymin)
 
-    
+
     def _x(self, xcoord, zoom):
         """Get the x coordinate (column) of this tile at this zoom level.
 
@@ -275,7 +275,7 @@ class BasicTilingBottomLeft(object):
 
 
     def _y(self, ycoord, zoom):
-        """Get the y coordinate (row) of this tile at this zoom level. 
+        """Get the y coordinate (row) of this tile at this zoom level.
 
         Note that this function assumes that the origin is on the
         bottom, not the top!
@@ -307,7 +307,7 @@ class BasicTilingTopLeft(object):
         ---------
 
     The origin of a tile (row, column) is the top left of the
-    bounds like Google, Bing, etc do. 
+    bounds like Google, Bing, etc do.
 
     Attributes:
         bounds: The bounding box for the projection that the tiling
@@ -320,7 +320,7 @@ class BasicTilingTopLeft(object):
         square tiling scheme defined over those bounds.  Note that if
         we think of long/lat, we are covering the earth twice with
         such a scheme!
-        
+
         Args:
             xmin: Minimum geospatial extent in the x direction of
                   tiling scheme.
@@ -349,9 +349,9 @@ class BasicTilingTopLeft(object):
 
         Args:
             xcoord: x direction geospatial coordinate within the tile
-                    we want. 
+                    we want.
             ycoord: y direction geospatial coordinate within the tile
-                    we want. 
+                    we want.
             zoom: zoom level of the tile we want.
 
         Returns:
@@ -376,7 +376,7 @@ class BasicTilingTopLeft(object):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z = tile
-        
+
         if x % 2 == 0 and y % 2 == 0: # x and y even
             return Tile(x//2, y//2, z - 1)
         elif x % 2 == 0: # x even, y odd
@@ -386,7 +386,7 @@ class BasicTilingTopLeft(object):
         else: # x odd, y odd
             return Tile((x - 1)//2, (y - 1)//2, z - 1)
 
-        
+
     def children(self, *tile):
         """Returns the children of the (x, y, z) tile.
 
@@ -394,7 +394,7 @@ class BasicTilingTopLeft(object):
             *tile: (x, y, z) tile coordinates or a Tile object we want
                    the children of.
 
-        Yields: 
+        Yields:
             An iterable of Tile objects representing the children of
             this tile.
         """
@@ -421,9 +421,9 @@ class BasicTilingTopLeft(object):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z  = tile
-        
+
         return Coords(self._xcoord(x, z), self._ycoord(y, z))
-                      
+
 
     def br(self, *tile):
         """Returns the bottom right coordinate of the (x, y, z) tile.
@@ -442,7 +442,7 @@ class BasicTilingTopLeft(object):
         return Coords(self._xcoord(x + 1, z),
                       self._ycoord(y + 1, z))
 
-    
+
     def bbox(self, *tile):
         """Returns the bounding box of the (x, y, z) tile.
 
@@ -460,7 +460,7 @@ class BasicTilingTopLeft(object):
         west, north = self.ul(tile)
         east, south = self.br(tile)
         return CoordsBbox(west, south, east, north)
-        
+
 
     def quadkey(self, *tile):
         """Returns the quadkey of the (x, y, z) tile.
@@ -475,7 +475,7 @@ class BasicTilingTopLeft(object):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z  = [int(i) for i in tile]
-        
+
         quadkey = []
         for zoom in range(z, 0, -1):
             digit = 0
@@ -539,7 +539,7 @@ class BasicTilingTopLeft(object):
 
         return (self._bounds.ymax - (y/(2.**z)*(self._bounds.ymax - self._bounds.ymin)))
 
-    
+
     def _x(self, xcoord, zoom):
         """Get the x coordinate (column) of this tile at this zoom level.
 
@@ -554,7 +554,7 @@ class BasicTilingTopLeft(object):
 
 
     def _y(self, ycoord, zoom):
-        """Get the y coordinate (row) of this tile at this zoom level. 
+        """Get the y coordinate (row) of this tile at this zoom level.
 
         Note that this function assumes that the origin is on the
         top, not the bottom!
@@ -568,7 +568,7 @@ class BasicTilingTopLeft(object):
         """
         return int(floor((2.**zoom)*(self._bounds.ymax - ycoord)/(self._bounds.ymax - self._bounds.ymin)))
 
-    
+
 
 class DGTiling(BasicTilingBottomLeft):
     """Tiler for the DG tiling scheme.
@@ -589,7 +589,7 @@ class DGTiling(BasicTilingBottomLeft):
         """
         super(DGTiling, self).__init__(-180, -90, 180, 270)
         self.bounds = CoordsBbox(-180., -90., 180., 90.)
- 
+
     def children(self, *tile):
         """Returns the children of the (x, y, z) tile.
 
@@ -600,7 +600,7 @@ class DGTiling(BasicTilingBottomLeft):
             *tile: (x, y, z) tile coordinates or a Tile object we want
                    the children of.
 
-        Yields: 
+        Yields:
             An iterable of Tile objects representing the children of
             this tile.
         """
@@ -641,9 +641,9 @@ class WebMercatorBL(BasicTilingBottomLeft):
             Tiling object for web mercator, with tile origin in the
             bottom left corner.
         """
-        super(WebMercatorBL, self).__init__(-20037508.342789244, 
+        super(WebMercatorBL, self).__init__(-20037508.342789244,
                                             -20037508.342789244,
-                                            20037508.342789244, 
+                                            20037508.342789244,
                                             20037508.342789244)
 
     def quadkey(self, *tile):
@@ -659,7 +659,7 @@ class WebMercatorBL(BasicTilingBottomLeft):
         if len(tile) == 1: # Handle if a Tile object was inputted.
             tile = tile[0]
         x, y, z  = [int(i) for i in tile]
-        
+
         quadkey = []
         for zoom in range(z, 0, -1):
             digit = 0
@@ -695,7 +695,7 @@ class WebMercatorBL(BasicTilingBottomLeft):
             elif digit == '3':
                 x = x | mask
                 y = y | mask
-        
+
         return Tile(x, 2**len(qk) - y - 1, len(qk))
 
 
@@ -705,7 +705,7 @@ class WebMercator(BasicTilingTopLeft):
 
     Web Mercator (EPSG 3857) is commonly used in online mapping
     applications.  This scheme has the tile coordinates originating in
-    the top left, which is what Google, Bing, and most others do for 
+    the top left, which is what Google, Bing, and most others do for
     Web Mercator.
 
     Note that quadkey indices are defined like this for each
@@ -725,14 +725,14 @@ class WebMercator(BasicTilingTopLeft):
             Tiling object for web mercator, with tile origin in the
             top left corner.
         """
-        super(WebMercator, self).__init__(-20037508.342789244, 
+        super(WebMercator, self).__init__(-20037508.342789244,
                                           -20037508.342789244,
-                                          20037508.342789244, 
+                                          20037508.342789244,
                                           20037508.342789244)
 
 
 class UTMTiling(BasicTilingTopLeft):
-    """A tiling of a UTM projection.  
+    """A tiling of a UTM projection.
 
     We are building a hierarchical grid valid for a UTM projection.
     Recall that such a projection is roughtly 1,000,000 meters across
@@ -747,7 +747,7 @@ class UTMTiling(BasicTilingTopLeft):
     """
     def __init__(self, tile_size):
         """Constructs a UTMTiling object.
-        
+
         Args:
             tile_size: The size of the tile grid (meters) you want to
                        use as a covering of the UTM bounds.
@@ -773,6 +773,56 @@ class UTMTiling(BasicTilingTopLeft):
                           map_size + 500_000.0,  map_size)
 
 
+
+class WorldNorthernUTMTiling(UTMTiling):
+    """
+    Transforms Southern Hemisphere Polar axes coordinates onto
+    the Northern Hemisphere Polar axes, which defines the origin
+    towards the Southern Pole and the positive upper bound to the North.
+    Amounts to a simple translation by the UTM zone height.
+
+    Convenience subclass that modifies the two public methods
+    used by the other geographic methods so as to make the change
+    at the source where the use case is relevant.
+    """
+
+    def ul(self, *tile):
+        """Returns the upper left coordinate of the (x, y, z) tile, and
+        translates the y coordinate to UTM Northern Hemisphere South-North
+        bounds if the tile is defined by UTM Southern Hemisphere bounds.
+
+        Args:
+            *tile: (x, y, z) tile coordinates or a Tile object we want
+                   the upper left geospatial coordinates of.
+        Returns:
+            The upper left geospatial coordiantes of the input tile.
+        """
+
+        coords = super().ul(*tile)
+        if self.quadkey(*tile)[0] in ('2', '3'):
+            coords = Coords(coords.x, coords.y + 10_000_000)
+        return coords
+
+    def br(self, *tile):
+        """Returns the bottom right coordinate of the (x, y, z) tile, and
+        translates the y coordinate to UTM Northern Hemisphere South-North
+        bounds if the tile is defined by UTM Southern Hemisphere bounds.
+
+        Args:
+            *tile: (x, y, z) tile coordinates or a Tile object we want
+                   the bottom right geospatial coordinates of.
+        Returns:
+            The bottom right geospatial coordiantes of the input tile.
+        """
+
+
+        coords = super().br(*tile)
+        if self.quadkey(*tile)[0] in ('2', '3'):
+            coords = Coords(coords.x, coords.y + 10_000_000)
+        return coords
+
+
+
 class UTM5kmTiling(UTMTiling):
     """A 5km tiling of a UTM zone.
 
@@ -782,7 +832,7 @@ class UTM5kmTiling(UTMTiling):
     def __init__(self):
         super().__init__(5_000)
 
-        
+
 class UTM10kmTiling(UTMTiling):
     """A 10km tiling of a UTM zone.
 
@@ -792,7 +842,7 @@ class UTM10kmTiling(UTMTiling):
     def __init__(self):
         super().__init__(10_000)
 
-        
+
 class UTM100kmTiling(UTMTiling):
     """A 100km tiling of a UTM zone.
 
@@ -800,4 +850,22 @@ class UTM100kmTiling(UTMTiling):
     to the 100km tiles.
     """
     def __init__(self):
-        super().__init__(100_000)        
+        super().__init__(100_000)
+
+
+class WNUTM5kTiling(UTM5kmTiling, WorldNorthernUTMTiling):
+    pass
+
+
+class WNUTM10kmTiling(UTM10kmTiling, WorldNorthernUTMTiling):
+    pass
+
+
+class WNUTM100kmTiling(UTM100kmTiling, WorldNorthernUTMTiling):
+    pass
+
+
+
+
+
+
