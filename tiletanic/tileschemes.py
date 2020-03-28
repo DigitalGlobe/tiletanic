@@ -853,7 +853,7 @@ class UTM100kmTiling(UTMTiling):
         super().__init__(100_000)
 
 
-class WNUTM5kTiling(UTM5kmTiling, WorldNorthernUTMTiling):
+class WNUTM5kmTiling(UTM5kmTiling, WorldNorthernUTMTiling):
     pass
 
 
