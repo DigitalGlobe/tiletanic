@@ -1,0 +1,6 @@
+data_classification:
+  - public
+
+poc:
+  - name: Patrick Young
+    email: Patrick.Young@maxar.com
