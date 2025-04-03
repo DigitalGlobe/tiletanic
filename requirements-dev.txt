@@ -1,4 +1,3 @@
 click
-geojson
 pytest>=5.0
 Shapely>=1.6

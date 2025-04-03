@@ -1,3 +1,6 @@
+# Next
+- Remove geojson dependency
+
 # 1.1.0 (2020-01-03)
 - Added new UTM5kmTiling tilescheme which aligns to the Maxar Analysis
   Ready Data (ARD) grid.

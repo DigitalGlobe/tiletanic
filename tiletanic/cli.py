@@ -3,7 +3,7 @@
 # Add documentation - how to run with a file vs stdout, document arguments, etc.
 
 import click
-import geojson
+import json
 from shapely import geometry, ops, prepared
 import tiletanic
 
@@ -74,7 +74,7 @@ def cover_geometry(tilescheme, aoi_geojson, zoom, adjacent, quadkey):
     else:
         raise ValueError("tilescheme '{}' is unsupported.").format(tilescheme)
 
-    aoi = geojson.loads( aoi_geojson.read() )
+    aoi = json.loads( aoi_geojson.read() )
 
     if 'type' not in aoi:
         raise ValueError("The 'AOI_GEOJSON' doesn't have a 'type' member. Is it valid GeoJSON?")
