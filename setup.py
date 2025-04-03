@@ -26,7 +26,6 @@ setup(name='tiletanic',
       include_package_data=True,
       zip_safe=False,
       install_requires=['click',
-                        'geojson',
                         'shapely>=1.6'],
       entry_points='''
          [console_scripts]
