@@ -84,9 +84,11 @@ def cover_geometry(tilescheme, aoi_geojson, zoom, adjacent, quadkey):
                                 if f['geometry']['type'].endswith('Polygon')])
     elif aoi['type'] == 'Feature':
         geom = geometry.shape(aoi['geometry'])
+    elif aoi['type'] in set(['Point', 'MultiPoint', 'Polygon', 'MultiPolygon', 'LineString', 'MultiLineString']):
+        geom = geometry.shape(aoi)
     else:
         raise ValueError("The AOI_GEOJSON 'type' %s is unsupported, " % aoi['type'] +
-                         "it must be 'Feature' or 'FeatureCollection'")
+                         "it must be Feature, FeatureCollection or a standard GeoJSON Geometry (Point, LineString, Polygon, MultiPolygon, etc.)")
 
     tiles = tiletanic.tilecover.cover_geometry(scheme, geom, zoom)
 

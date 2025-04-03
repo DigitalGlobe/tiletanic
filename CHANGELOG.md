@@ -1,4 +1,7 @@
 # Next
+- Add `tiletanic cover-geometry` support for a variety of GeoJSON
+  geometry types (Point, MultiPoint, Polygon, MultiPolygon,
+  LineString, MultiLineString).
 - Remove geojson dependency
 
 # 1.1.0 (2020-01-03)
